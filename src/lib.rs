@@ -96,11 +96,13 @@ where
 pub fn new_pipeline(
     api_key: impl Into<HoneycombApiKey>,
     dataset: String,
+    api_host: String,
 ) -> HoneycombPipelineBuilder {
     HoneycombPipelineBuilder {
         api_key: api_key.into(),
         block_on: Arc::new(|f| tokio::runtime::Handle::current().block_on(f)),
         dataset,
+        api_host,
         trace_config: None,
         transmission_options: libhoney::transmission::Options {
             user_agent_addition: Some(format!(
@@ -126,6 +128,7 @@ pub struct HoneycombPipelineBuilder {
     #[derivative(Debug = "ignore")]
     block_on: BlockOn,
     dataset: String,
+    api_host: String,
     #[derivative(Debug = "ignore")]
     executor: FutureExecutor,
     trace_config: Option<opentelemetry::sdk::trace::Config>,
@@ -179,6 +182,7 @@ impl HoneycombPipelineBuilder {
             options: libhoney::client::Options {
                 api_key: self.api_key.into_inner(),
                 dataset: self.dataset,
+                api_host: self.api_host,
                 ..Default::default()
             },
             transmission_options: self.transmission_options,
